@@ -53,7 +53,12 @@ class Game(object):
                 sys.exit(0)
 
         self.name = sys.argv[1]
-        pygame.display.set_mode(size.xy(), OPENGL|DOUBLEBUF)
+
+        flags = OPENGL|DOUBLEBUF
+        if '--fullscreen' in sys.argv:
+            flags |= FULLSCREEN
+
+        pygame.display.set_mode(size.xy(), flags)
         pygame.display.set_caption('sporse runner')
         self._running = True
 
