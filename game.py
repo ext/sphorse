@@ -30,6 +30,9 @@ class Game(object):
 
         self.on_resize(size=size)
 
+    def stop(self):
+        self._running = false
+
     def do_stuff(self):
         clock = pygame.time.Clock()
         while self._running:
@@ -82,6 +85,11 @@ class Game(object):
 
         pygame.display.flip()
 
+    @event(pygame.KEYDOWN)
+    def on_keydown(self, event):
+        print event.key
+        
+
     @event(pygame.VIDEORESIZE)
     def on_resize(self, event=None, size=None):
         if event is not None:
@@ -93,4 +101,4 @@ class Game(object):
 
     @event(pygame.QUIT)
     def on_quit(self, event):
-        self._running = False
+        self.stop()
