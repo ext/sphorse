@@ -250,6 +250,7 @@ map = numpy.array([
 
 if __name__ == '__main__':
     pygame.display.init()
+    pygame.mixer.init()
     
     game = Game(size=Vector2i(800,600), fullscreen=False)
 

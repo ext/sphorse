@@ -70,6 +70,9 @@ class Game(object):
         glFogf(GL_FOG_END, 45.0)
         glEnable(GL_FOG)
 
+        self.music = pygame.mixer.Sound('nyan.wav')
+        self.music.play(loops=-1)
+
         self.on_resize(size=size)
 
     def stop(self):
