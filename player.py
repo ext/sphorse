@@ -9,9 +9,9 @@ class Player(object):
     max_speed = 1.8
 
     def __init__(self):
-        self.x = 0
-        self.y = 1 # starts a bit in the air
-        self.z = 360
+        self.x = 2
+        self.y = 2 # starts a bit in the air
+        self.z = 960
 
         # speed
         self.vel = 0.0
@@ -95,10 +95,13 @@ class Player(object):
         except IndexError:
             pass
 
-        if h2 > 9:
-            h2 = int(h2) % 10 + int(h2)/10
+        lower = math.floor(h2) 
+        upper = (h2 - math.floor(h2)) * 100
 
-        if h2 <= h1:
+        if lower > 9:
+            lower = int(lower) % 10 + int(lower)/10
+
+        if lower <= h1 and (upper < 0.01 or upper > h1+1.5):
             player.x = x
 
     def right(self):
@@ -112,10 +115,13 @@ class Player(object):
         except IndexError:
             pass
 
-        if h2 > 9:
-            h2 = int(h2) % 10 + int(h2)/10
+        lower = math.floor(h2) 
+        upper = (h2 - math.floor(h2)) * 100
 
-        if h2 <= h1:
+        if lower > 9:
+            lower = int(lower) % 10 + int(lower)/10
+
+        if lower <= h1 and (upper < 0.01 or upper > h1+1.5):
             player.x = x
 
 
