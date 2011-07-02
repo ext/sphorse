@@ -49,6 +49,14 @@ class Game(object):
         glEnable(GL_BLEND)
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
+        glFogi(GL_FOG_MODE, GL_LINEAR)
+        glFogfv(GL_FOG_COLOR, (1,0,1,1))
+        glFogf(GL_FOG_DENSITY, 1.0)
+        glHint(GL_FOG_HINT, GL_DONT_CARE)
+        glFogf(GL_FOG_START, 30.0)
+        glFogf(GL_FOG_END, 45.0)
+        glEnable(GL_FOG)
+
         self.on_resize(size=size)
 
     def stop(self):
