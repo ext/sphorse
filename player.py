@@ -26,7 +26,7 @@ class Player(object):
         self.frame = 0
 
     def render(self):
-        h = self.calc_height()
+        h,_ = self.calc_height()
         
         if h > -0.1:
             glPushMatrix()
@@ -122,13 +122,13 @@ class Player(object):
             self.in_air = True
 
     def update(self):
-        height = self.calc_height()
-
+        lower, upper = self.calc_height()
         if self.jump_pow > 0:
-            self.y += 0.2
+            if self.y + 2.6 < upper:
+                self.y += 0.2
             self.jump_pow -= 1
 
-        if self.y < height:
+        if self.y < lower or self.y+2.4 > upper:
             self.z -= self.vel * 1
             self.acc = -0.1
             self.vel = 0.0
@@ -138,9 +138,9 @@ class Player(object):
         self.vel *= 0.993
 
         self.y -= 0.1
-        if self.y < height:
+        if self.y < lower:
             self.in_air = False
-            self.y = height
+            self.y = lower
 
         # fell down
         if self.y < -0.9:
@@ -165,4 +165,12 @@ class Player(object):
             height2 = map[my][mx2]
         except IndexError:
             pass
-        return max(height1, height2)
+        
+        tmp = max(height1, height2)
+        lower = math.floor(tmp)
+        upper = (tmp - math.floor(tmp)) * 100
+
+        if upper < 0.001:
+            upper = 9999999.0
+        
+        return lower, int(upper)/10

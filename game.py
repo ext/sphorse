@@ -43,14 +43,14 @@ class Game(object):
         pygame.display.set_caption('sporse runner')
         self._running = True
 
-        glClearColor(1,0,1,1)
+        glClearColor(0,0,0,1)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         glFogi(GL_FOG_MODE, GL_LINEAR)
-        glFogfv(GL_FOG_COLOR, (1,0,1,1))
+        glFogfv(GL_FOG_COLOR, (0,0,0,1))
         glFogf(GL_FOG_DENSITY, 1.0)
         glHint(GL_FOG_HINT, GL_DONT_CARE)
         glFogf(GL_FOG_START, 30.0)
@@ -64,6 +64,7 @@ class Game(object):
 
     def do_stuff(self):
         clock = pygame.time.Clock()
+        timer = pygame.time.get_ticks()
         while self._running:
             try:
                 self.poll()
@@ -76,6 +77,8 @@ class Game(object):
                 traceback.print_exc()
 
             clock.tick_busy_loop(Game.framerate)
+        print 'Total time: %ds' % ((pygame.time.get_ticks() - timer) / 1000)
+        print 'Total distance: %dm' % math.floor(player.z)
 
     def poll(self):
         global event_table
@@ -119,42 +122,55 @@ class Game(object):
                 if row[i] < 0.0:
                     continue
 
-                p0 = (-0.5 + x, row[i], 0 + z)
-                p1 = (-0.5 + x, row[i], 1 + z)
-                p2 = ( 0.5 + x, row[i], 1 + z)
-                p3 = ( 0.5 + x, row[i], 0 + z)
-                p4 = ( 0.5 + x, -1, 0 + z)
-                p5 = (-0.5 + x, -1, 0 + z)
-                p6 = (-0.5 + x, -1, 1 + z)
-                p7 = ( 0.5 + x, -1, 1 + z)
+                for y in [
+                    math.floor(row[i]),
+                    (row[i] - math.floor(row[i])) * 100
+                ]:
+                    hs = int(y) / 10 - 1
+                    he = int(y) % 10 + (hs+1)
 
-                lcolor = game.colors[z%len(game.colors)]
-                dcolor = [i < 3 and c*0.3 or c for i,c in enumerate(lcolor)]
+                    p0 = (-0.5 + x, he, 0 + z)
+                    p1 = (-0.5 + x, he, 1 + z)
+                    p2 = ( 0.5 + x, he, 1 + z)
+                    p3 = ( 0.5 + x, he, 0 + z)
+                    p4 = ( 0.5 + x, hs, 0 + z)
+                    p5 = (-0.5 + x, hs, 0 + z)
+                    p6 = (-0.5 + x, hs, 1 + z)
+                    p7 = ( 0.5 + x, hs, 1 + z)
+                    
+                    lcolor = game.colors[z%len(game.colors)]
+                    dcolor = [i < 3 and c*0.3 or c for i,c in enumerate(lcolor)]
+                    
+                    glBegin(GL_QUADS)
+                    glColor4f(*lcolor)
+                    glVertex3f(*p0)
+                    glVertex3f(*p1)
+                    glVertex3f(*p2)
+                    glVertex3f(*p3)
 
-                glBegin(GL_QUADS)
-                glColor4f(*lcolor)
-                glVertex3f(*p0)
-                glVertex3f(*p1)
-                glVertex3f(*p2)
-                glVertex3f(*p3)
+                    glVertex3f(*p6)
+                    glVertex3f(*p7)
+                    glVertex3f(*p4)
+                    glVertex3f(*p5)
 
-                glColor4f(*dcolor)
-                glVertex3f(*p0)
-                glVertex3f(*p3)
-                glVertex3f(*p4)
-                glVertex3f(*p5)
-
-                glVertex3f(*p0)
-                glVertex3f(*p5)
-                glVertex3f(*p6)
-                glVertex3f(*p1)
-
-                glVertex3f(*p3)
-                glVertex3f(*p2)
-                glVertex3f(*p7)
-                glVertex3f(*p4)
-
-                glEnd()
+                    
+                    glColor4f(*dcolor)
+                    glVertex3f(*p0)
+                    glVertex3f(*p3)
+                    glVertex3f(*p4)
+                    glVertex3f(*p5)
+                    
+                    glVertex3f(*p0)
+                    glVertex3f(*p5)
+                    glVertex3f(*p6)
+                    glVertex3f(*p1)
+                    
+                    glVertex3f(*p3)
+                    glVertex3f(*p2)
+                    glVertex3f(*p7)
+                    glVertex3f(*p4)
+                    
+                    glEnd()
         glPopAttrib()
 
         player.render()
