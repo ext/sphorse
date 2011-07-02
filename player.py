@@ -20,6 +20,7 @@ class Player(object):
         # for jumps
         self.in_air = True
         self.jump_pow = 0.0
+        self.jumping = False
 
         self.sprite = Sprite('player.png', 10)
         self.shadow = Sprite('shadow.png', 1)
@@ -116,17 +117,23 @@ class Player(object):
         if self.in_air:
             return
 
-        self.jump_pow += 2
+        self.jumping = True
+        self.jump_pow += 1
 
-        if self.jump_pow == 13:
+        if self.jump_pow >= 20:
             self.in_air = True
+            self.jumping = False
+
+    def unjump(self):
+        self.jump_pow = 0
+        self.jumping = False
+        self.in_air = True
 
     def update(self):
         lower, upper = self.calc_height()
-        if self.jump_pow > 0:
+        if self.jumping > 0:
             if self.y + 2.6 < upper:
                 self.y += 0.2
-            self.jump_pow -= 1
 
         if self.y < lower or self.y+2.4 > upper:
             self.z -= self.vel * 1

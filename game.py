@@ -182,6 +182,11 @@ class Game(object):
         if event.key == K_ESCAPE:
             self.stop()
 
+    @event(pygame.KEYUP)
+    def on_keyup(self, event):
+        if event.key == K_SPACE:
+            player.unjump()
+
     @event(pygame.VIDEORESIZE)
     def on_resize(self, event=None, size=None):
         if event is not None:
