@@ -136,7 +136,7 @@ class Player(object):
                 self.y += 0.2
 
         if self.y < lower or self.y+2.4 > upper:
-            self.z -= self.vel * 1
+            self.z -= self.vel
             self.acc = -0.1
             self.vel = 0.0
             return

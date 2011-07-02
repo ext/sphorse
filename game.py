@@ -3,6 +3,8 @@
 import pygame
 import traceback
 import math
+import sys
+import json
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -39,6 +41,16 @@ class Game(object):
     ]
 
     def __init__(self, size, fullscreen=False):
+        if len(sys.argv) < 2:
+            print 'specify name as argument',
+            sys.exit(1)
+
+        for x in sys.argv:
+            if x == '--score':
+                self.print_hiscore()
+                sys.exit(0)
+
+        self.name = sys.argv[1]
         pygame.display.set_mode(size.xy(), OPENGL|DOUBLEBUF)
         pygame.display.set_caption('sporse runner')
         self._running = True
@@ -77,8 +89,61 @@ class Game(object):
                 traceback.print_exc()
 
             clock.tick_busy_loop(Game.framerate)
-        print 'Total time: %ds' % ((pygame.time.get_ticks() - timer) / 1000)
-        print 'Total distance: %dm' % math.floor(player.z)
+
+        t = ((pygame.time.get_ticks() - timer) / 1000)
+        d = math.floor(player.z)
+        self.hiscore(self.name, t,d)
+
+    def hiscore(self, name, t, d):
+        try:
+            fp = open('.score', 'r')
+            score = json.load(fp)
+            fp.close()
+        except IOError:
+            score = []
+
+        score.append((name, d, t))
+
+        def frobnicate(a,b):
+            if a[1] < b[1]:
+                return 1
+            if a[1] > b[1]:
+                return -1
+
+            if a[2] > b[2]:
+                return 1
+            return -1
+
+        score.sort(cmp=frobnicate)
+
+        i = 0
+        for i, (_name,_distance,_time) in enumerate(score):
+            if _name == name and _distance == d and _time == t:
+                break
+        
+        else:
+            i += 1
+
+        fp = open('.score', 'w')
+        json.dump(score[:10], fp)
+        fp.close()
+
+        print 'Total time: %ds' % t
+        print 'Total distance: %dm' % d
+        if i < 10:
+            print 'Placement: %d' % (i+1)
+        print
+        self.print_hiscore(mark=i)
+
+    def print_hiscore(self, mark=-1):
+        fp = open('.score', 'r')
+        score = json.load(fp)
+
+        print '-*' * 20
+        print 'Pos           Name   Dist   Time'
+        for i, (_name,_distance,_time) in enumerate(score[:10]):
+            print ' %2d %14.14s  %4dm   %3ds %s' % (i+1, _name, _distance, _time, i == mark and '*' or '')
+        print '-*' * 20
 
     def poll(self):
         global event_table
@@ -116,6 +181,11 @@ class Game(object):
         glDisable(GL_TEXTURE_2D)
         h,w = map.shape
         my =  max(int(player.z)-10, 0)
+
+        if int(player.z) > h:
+            self.stop()
+            return
+
         for z, row in enumerate(map[my:my+50]):
             z += my
             for i, x in enumerate([-2, -1, 0, 1, 2]):
