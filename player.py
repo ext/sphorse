@@ -11,7 +11,7 @@ class Player(object):
     def __init__(self):
         self.x = 0
         self.y = 1 # starts a bit in the air
-        self.z = 0
+        self.z = 360
 
         # speed
         self.vel = 0.0
@@ -80,7 +80,7 @@ class Player(object):
             self.acc *= 1.0 - (self.vel/Player.max_speed)
 
     def dec(self):
-        self.acc = -0.1
+        self.acc = -0.03
         if self.vel < 0.0:
             self.acc *= 1.0 - (self.vel/(-Player.max_speed*0.3))
     
@@ -95,6 +95,9 @@ class Player(object):
         except IndexError:
             pass
 
+        if h2 > 9:
+            h2 = int(h2) % 10 + int(h2)/10
+
         if h2 <= h1:
             player.x = x
 
@@ -108,6 +111,9 @@ class Player(object):
             h2 = map[my][mx2]
         except IndexError:
             pass
+
+        if h2 > 9:
+            h2 = int(h2) % 10 + int(h2)/10
 
         if h2 <= h1:
             player.x = x
@@ -174,9 +180,11 @@ class Player(object):
             pass
         
         tmp = max(height1, height2)
-        lower = math.floor(tmp)
+        lower = math.floor(tmp) 
         upper = (tmp - math.floor(tmp)) * 100
 
+        if lower > 9:
+            lower = int(lower) % 10 + int(lower)/10
         if upper < 0.001:
             upper = 9999999.0
         
