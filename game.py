@@ -80,9 +80,9 @@ class Game(object):
     def logic(self):
         keys = pygame.key.get_pressed()
         if keys[K_a]:
-            player.x += 0.1
+            player.left()
         if keys[K_d]:
-            player.x -= 0.1
+            player.right()
         if keys[K_w]:
             player.inc()
         if keys[K_s]:
@@ -154,7 +154,7 @@ class Game(object):
     @event(pygame.KEYDOWN)
     def on_keydown(self, event):
         if event.key == K_ESCAPE:
-            self.quit()
+            self.stop()
 
     @event(pygame.VIDEORESIZE)
     def on_resize(self, event=None, size=None):

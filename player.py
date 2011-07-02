@@ -6,7 +6,7 @@ import math
 from sprite import Sprite
 
 class Player(object):
-    max_speed = 1.5
+    max_speed = 1.8
 
     def __init__(self):
         self.x = 0
@@ -47,6 +47,8 @@ class Player(object):
             glPopMatrix()
 
         glPushMatrix()
+        glPushAttrib(GL_ENABLE_BIT)
+        #glDisable(GL_DEPTH_TEST)
         glTranslatef(player.x, player.y, player.z)
         glColor4f(1,1,1,1)
         self.sprite.bind()
@@ -68,6 +70,7 @@ class Player(object):
         glVertex3f(-0.4,   0, 0)
         glEnd()
 
+        glPopAttrib()
         glPopMatrix()
 
     def inc(self):
@@ -79,6 +82,35 @@ class Player(object):
         self.acc = -0.1
         if self.vel < 0.0:
             self.acc *= 1.0 - (self.vel/(-Player.max_speed*0.3))
+    
+    def left(self):
+        x = player.x + 0.1
+        mx2 = int(math.ceil(x-0.2) + 2)
+        my =  int(player.z)
+        h1 = player.y
+        h2 = -1
+        try:
+            h2 = map[my][mx2]
+        except IndexError:
+            pass
+
+        if h2 <= h1:
+            player.x = x
+
+    def right(self):
+        x = player.x - 0.1
+        mx2 = int(math.ceil(x-0.8) + 2)
+        my =  int(player.z)
+        h1 = player.y
+        h2 = -1
+        try:
+            h2 = map[my][mx2]
+        except IndexError:
+            pass
+
+        if h2 <= h1:
+            player.x = x
+
 
     def jump(self):
         if self.in_air:
@@ -97,7 +129,13 @@ class Player(object):
             self.jump_pow -= 1
 
         if self.y < height:
-            raise game.Lost, 'crashed'
+            self.z -= self.vel * 1
+            self.acc = -0.1
+            self.vel = 0.0
+            return
+            #raise game.Lost, 'crashed'
+
+        self.vel *= 0.993
 
         self.y -= 0.1
         if self.y < height:
