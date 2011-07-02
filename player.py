@@ -3,6 +3,7 @@
 from OpenGL.GL import *
 import game
 import math
+from sprite import Sprite
 
 class Player(object):
     max_speed = 1.5
@@ -20,16 +21,53 @@ class Player(object):
         self.in_air = True
         self.jump_pow = 0.0
 
+        self.sprite = Sprite('player.png', 10)
+        self.shadow = Sprite('shadow.png', 1)
+        self.frame = 0
+
     def render(self):
+        h = self.calc_height()
+        
+        if h > -0.1:
+            glPushMatrix()
+            glTranslatef(player.x, h + 0.01, player.z)
+            
+            self.shadow.bind()
+            glBegin(GL_QUADS)
+            glTexCoord2f(0,0)
+            glVertex3f(-0.4, 0, -0.4)
+            glTexCoord2f(1,0)
+            glVertex3f( 0.4, 0, -0.4)
+            glTexCoord2f(1,1)
+            glVertex3f( 0.4, 0,  0.4)
+            glTexCoord2f(0,1)
+            glVertex3f(-0.4, 0,  0.4)
+            glEnd()
+
+            glPopMatrix()
+
         glPushMatrix()
         glTranslatef(player.x, player.y, player.z)
         glColor4f(1,1,1,1)
+        self.sprite.bind()
+      
+        t = self.sprite.index((self.frame / 3) % 10)
+        self.frame += 1
+
         glBegin(GL_QUADS)
+        glTexCoord2f(*t[3])
         glVertex3f(-0.4, 1.5, 0)
+
+        glTexCoord2f(*t[0])
         glVertex3f( 0.4, 1.5, 0)
+
+        glTexCoord2f(*t[1])
         glVertex3f( 0.4,   0, 0)
+
+        glTexCoord2f(*t[2])
         glVertex3f(-0.4,   0, 0)
         glEnd()
+
         glPopMatrix()
 
     def inc(self):
@@ -52,22 +90,7 @@ class Player(object):
             self.in_air = True
 
     def update(self):
-        # get height (from two sample points)
-        mx1 = int(math.ceil(player.x-0.8) + 2)
-        mx2 = int(math.ceil(player.x-0.2) + 2)
-        my =  int(player.z)
-        height1 = -1
-        height2 = -1
-        try:
-            height1 = map[my][mx1]
-        except IndexError:
-            pass
-        try:
-            height2 = map[my][mx2]
-        except IndexError:
-            pass
-        print height1, height2
-        height = max(height1, height2)
+        height = self.calc_height()
 
         if self.jump_pow > 0:
             self.y += 0.2
@@ -88,3 +111,20 @@ class Player(object):
         self.vel += self.acc
         self.z += self.vel
         self.acc = 0.0
+
+    def calc_height(self):
+        # get height (from two sample points)
+        mx1 = int(math.ceil(player.x-0.8) + 2)
+        mx2 = int(math.ceil(player.x-0.2) + 2)
+        my =  int(player.z)
+        height1 = -1
+        height2 = -1
+        try:
+            height1 = map[my][mx1]
+        except IndexError:
+            pass
+        try:
+            height2 = map[my][mx2]
+        except IndexError:
+            pass
+        return max(height1, height2)

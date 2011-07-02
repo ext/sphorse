@@ -45,6 +45,9 @@ class Game(object):
 
         glClearColor(1,0,1,1)
         glEnable(GL_DEPTH_TEST)
+        glEnable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         self.on_resize(size=size)
 
@@ -98,8 +101,8 @@ class Game(object):
                   0, 0, player.z + 15,
                   0, 1, 0)
 
-        player.render()
-
+        glPushAttrib(GL_ENABLE_BIT)
+        glDisable(GL_TEXTURE_2D)
         h,w = map.shape
         for z, row in enumerate(map):
             for i, x in enumerate([-2, -1, 0, 1, 2]):
@@ -115,14 +118,17 @@ class Game(object):
                 p6 = (-0.5 + x, -1, 1 + z)
                 p7 = ( 0.5 + x, -1, 1 + z)
 
+                lcolor = game.colors[z%len(game.colors)]
+                dcolor = [i < 3 and c*0.3 or c for i,c in enumerate(lcolor)]
+
                 glBegin(GL_QUADS)
-                glColor4f(*game.colors[z%len(game.colors)])
+                glColor4f(*lcolor)
                 glVertex3f(*p0)
                 glVertex3f(*p1)
                 glVertex3f(*p2)
                 glVertex3f(*p3)
 
-                glColor4f(*[_*0.3 for _ in game.colors[z%len(game.colors)]])
+                glColor4f(*dcolor)
                 glVertex3f(*p0)
                 glVertex3f(*p3)
                 glVertex3f(*p4)
@@ -139,6 +145,9 @@ class Game(object):
                 glVertex3f(*p4)
 
                 glEnd()
+        glPopAttrib()
+
+        player.render()
 
         pygame.display.flip()
 
