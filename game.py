@@ -104,7 +104,9 @@ class Game(object):
         glPushAttrib(GL_ENABLE_BIT)
         glDisable(GL_TEXTURE_2D)
         h,w = map.shape
-        for z, row in enumerate(map):
+        my =  max(int(player.z)-10, 0)
+        for z, row in enumerate(map[my:my+50]):
+            z += my
             for i, x in enumerate([-2, -1, 0, 1, 2]):
                 if row[i] < 0.0:
                     continue
