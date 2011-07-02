@@ -9,9 +9,9 @@ class Player(object):
     max_speed = 1.8
 
     def __init__(self):
-        self.x = 2
-        self.y = 2 # starts a bit in the air
-        self.z = 960
+        self.x = 0
+        self.y = 1 # starts a bit in the air
+        self.z = 0
 
         # speed
         self.vel = 0.0

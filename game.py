@@ -10,6 +10,7 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from vector import Vector2i
+from sprite import Sprite
 
 event_table = {}
 
@@ -70,8 +71,12 @@ class Game(object):
         glFogf(GL_FOG_END, 45.0)
         glEnable(GL_FOG)
 
+        
+
         self.music = pygame.mixer.Sound('nyan.wav')
         self.music.play(loops=-1)
+
+        self.goal = Sprite('goal.png', 1)
 
         self.on_resize(size=size)
 
@@ -89,6 +94,9 @@ class Game(object):
             except Lost, e:
                 print e
                 break
+            except GLError:
+                traceback.print_exc()
+                self.stop()
             except:
                 traceback.print_exc()
 
@@ -200,6 +208,25 @@ class Game(object):
             y = (random.random() - 0.5) * 25.0
             glVertex3f(x, y, seed)
 
+        glEnd()
+        glPopAttrib()
+
+        # goal
+        glPushAttrib(GL_ENABLE_BIT)
+        glEnable(GL_TEXTURE_2D)
+        self.goal.bind()
+        glBegin(GL_QUADS)
+        glTexCoord2f(1,0)
+        glVertex3f(-3.0, 3.5, 999)
+
+        glTexCoord2f(0,0)
+        glVertex3f( 3.0, 3.5, 999)
+
+        glTexCoord2f(0,1)
+        glVertex3f( 3.0,   0, 999)
+
+        glTexCoord2f(1,1)
+        glVertex3f(-3.0,   0, 999)
         glEnd()
         glPopAttrib()
 
