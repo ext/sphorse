@@ -25,12 +25,17 @@ class Game(object):
     framerate = 30
 
     colors = [
-        (1,1,1,1),
-        (1,1,0,1),
-        (0,0,1,1),
-        (0,1,1,1),
-        (0,1,0,1),
-        (1,0,0,1),
+        (1.0, 0.0, 0.0, 1),
+        (1.0, 0.3, 0.0, 1),
+        (1.0, 0.5, 0.0, 1),
+        (1.0, 0.8, 0.0, 1),
+        (1.0, 1.0, 0.0, 1),
+        (0.5, 1.0, 0.0, 1),
+        (0.0, 1.0, 0.0, 1),
+        (0.0, 1.0, 0.5, 1),
+        (0.0, 1.0, 1.0, 1),
+        (0.0, 0.5, 1.0, 1),
+        (0.0, 0.0, 1.0, 1),
     ]
 
     def __init__(self, size, fullscreen=False):
@@ -97,7 +102,6 @@ class Game(object):
 
         h,w = map.shape
         for z, row in enumerate(map):
-            glColor4f(*game.colors[z%4])
             for i, x in enumerate([-2, -1, 0, 1, 2]):
                 if row[i] < 0.0:
                     continue
@@ -112,13 +116,13 @@ class Game(object):
                 p7 = ( 0.5 + x, -1, 1 + z)
 
                 glBegin(GL_QUADS)
-                glColor4f(*game.colors[z%6])
+                glColor4f(*game.colors[z%len(game.colors)])
                 glVertex3f(*p0)
                 glVertex3f(*p1)
                 glVertex3f(*p2)
                 glVertex3f(*p3)
 
-                glColor4f(*[_*0.3 for _ in game.colors[z%6]])
+                glColor4f(*[_*0.3 for _ in game.colors[z%len(game.colors)]])
                 glVertex3f(*p0)
                 glVertex3f(*p3)
                 glVertex3f(*p4)

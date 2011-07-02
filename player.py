@@ -39,6 +39,8 @@ class Player(object):
 
     def dec(self):
         self.acc = -0.1
+        if self.vel < 0.0:
+            self.acc *= 1.0 - (self.vel/(-Player.max_speed*0.3))
 
     def jump(self):
         if self.in_air:
@@ -50,19 +52,22 @@ class Player(object):
             self.in_air = True
 
     def update(self):
-        # get height
-        mx = int(math.ceil(player.x-0.5) + 2)
+        # get height (from two sample points)
+        mx1 = int(math.ceil(player.x-0.8) + 2)
+        mx2 = int(math.ceil(player.x-0.2) + 2)
         my =  int(player.z)
-        height = -1
+        height1 = -1
+        height2 = -1
         try:
-            height = map[my][mx]
+            height1 = map[my][mx1]
         except IndexError:
             pass
-        print
-        print 'px:', player.x
-        print player.x - 0.5
-        print math.ceil(player.x-0.5)
-        print mx, player.x, '    ',  my, height
+        try:
+            height2 = map[my][mx2]
+        except IndexError:
+            pass
+        print height1, height2
+        height = max(height1, height2)
 
         if self.jump_pow > 0:
             self.y += 0.2
