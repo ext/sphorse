@@ -209,10 +209,11 @@ class Game(object):
                 if row[i] < 0.0:
                     continue
 
-                for y in [
-                    math.floor(row[i]),
-                    (row[i] - math.floor(row[i])) * 100
-                ]:
+                tmp = [math.floor(row[i])]
+                if row[i] - math.floor(row[i]) > 0:
+                    tmp.append((row[i] - math.floor(row[i])) * 100)
+
+                for y in tmp:
                     hs = int(y) / 10 - 1
                     he = int(y) % 10 + (hs+1)
 
