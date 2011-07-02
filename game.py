@@ -16,10 +16,22 @@ def event(type):
         return func
     return wrapper
 
+class Lost(Exception):
+    pass
+
 class Game(object):
     camera_height = 2
     camera_distance = 10
     framerate = 30
+
+    colors = [
+        (1,1,1,1),
+        (1,1,0,1),
+        (0,0,1,1),
+        (0,1,1,1),
+        (0,1,0,1),
+        (1,0,0,1),
+    ]
 
     def __init__(self, size, fullscreen=False):
         pygame.display.set_mode(size.xy(), OPENGL|DOUBLEBUF)
@@ -41,6 +53,9 @@ class Game(object):
                 self.poll()
                 self.logic()
                 self.render()
+            except Lost, e:
+                print e
+                break
             except:
                 traceback.print_exc()
 
@@ -80,13 +95,46 @@ class Game(object):
 
         player.render()
 
-        glColor4f(1,1,0,1)
-        glBegin(GL_QUADS)
-        glVertex3f(-1.5, 0, -1 )
-        glVertex3f(-1.5, 0,  75)
-        glVertex3f( 1.5, 0,  75)
-        glVertex3f( 1.5, 0, -1 )
-        glEnd()
+        h,w = map.shape
+        for z, row in enumerate(map):
+            glColor4f(*game.colors[z%4])
+            for i, x in enumerate([-2, -1, 0, 1, 2]):
+                if row[i] < 0.0:
+                    continue
+
+                p0 = (-0.5 + x, row[i], 0 + z)
+                p1 = (-0.5 + x, row[i], 1 + z)
+                p2 = ( 0.5 + x, row[i], 1 + z)
+                p3 = ( 0.5 + x, row[i], 0 + z)
+                p4 = ( 0.5 + x, -1, 0 + z)
+                p5 = (-0.5 + x, -1, 0 + z)
+                p6 = (-0.5 + x, -1, 1 + z)
+                p7 = ( 0.5 + x, -1, 1 + z)
+
+                glBegin(GL_QUADS)
+                glColor4f(*game.colors[z%6])
+                glVertex3f(*p0)
+                glVertex3f(*p1)
+                glVertex3f(*p2)
+                glVertex3f(*p3)
+
+                glColor4f(*[_*0.3 for _ in game.colors[z%6]])
+                glVertex3f(*p0)
+                glVertex3f(*p3)
+                glVertex3f(*p4)
+                glVertex3f(*p5)
+
+                glVertex3f(*p0)
+                glVertex3f(*p5)
+                glVertex3f(*p6)
+                glVertex3f(*p1)
+
+                glVertex3f(*p3)
+                glVertex3f(*p2)
+                glVertex3f(*p7)
+                glVertex3f(*p4)
+
+                glEnd()
 
         pygame.display.flip()
 

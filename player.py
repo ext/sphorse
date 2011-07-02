@@ -1,6 +1,8 @@
 # -*- coding: utf-8; -*-
 
 from OpenGL.GL import *
+import game
+import math
 
 class Player(object):
     max_speed = 1.5
@@ -23,10 +25,10 @@ class Player(object):
         glTranslatef(player.x, player.y, player.z)
         glColor4f(1,1,1,1)
         glBegin(GL_QUADS)
-        glVertex3f(-0.5, 1.5, 0)
-        glVertex3f( 0.5, 1.5, 0)
-        glVertex3f( 0.5,   0, 0)
-        glVertex3f(-0.5,   0, 0)
+        glVertex3f(-0.1, 1.5, 0)
+        glVertex3f( 0.1, 1.5, 0)
+        glVertex3f( 0.1,   0, 0)
+        glVertex3f(-0.1,   0, 0)
         glEnd()
         glPopMatrix()
 
@@ -44,21 +46,40 @@ class Player(object):
 
         self.jump_pow += 2
 
-        if self.jump_pow == 10:
+        if self.jump_pow == 13:
             self.in_air = True
 
     def update(self):
+        # get height
+        mx = int(math.ceil(player.x-0.5) + 2)
+        my =  int(player.z)
+        height = -1
+        try:
+            height = map[my][mx]
+        except IndexError:
+            pass
+        print
+        print 'px:', player.x
+        print player.x - 0.5
+        print math.ceil(player.x-0.5)
+        print mx, player.x, '    ',  my, height
+
         if self.jump_pow > 0:
             self.y += 0.2
             self.jump_pow -= 1
 
-        self.y -= 0.1
+        if self.y < height:
+            raise game.Lost, 'crashed'
 
-        if self.y < 0.0:
+        self.y -= 0.1
+        if self.y < height:
             self.in_air = False
-            self.y = 0.0
+            self.y = height
+
+        # fell down
+        if self.y < -0.9:
+            raise game.Lost, 'fell down'
 
         self.vel += self.acc
         self.z += self.vel
         self.acc = 0.0
-
