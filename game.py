@@ -5,6 +5,7 @@ import traceback
 import math
 import sys
 import json
+import random
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -186,6 +187,19 @@ class Game(object):
             self.stop()
             return
 
+        glPushAttrib(GL_ENABLE_BIT)
+        glDisable(GL_DEPTH_TEST)
+        glColor4f(1,1,1,1)
+        glBegin(GL_POINTS)
+        for seed in range(my, int(player.z) + 200):
+            random.seed(seed)
+            x = (random.random() - 0.5) * 25.0
+            y = (random.random() - 0.5) * 25.0
+            glVertex3f(x, y, seed)
+
+        glEnd()
+        glPopAttrib()
+
         for z, row in enumerate(map[my:my+50]):
             z += my
             for i, x in enumerate([-2, -1, 0, 1, 2]):
@@ -264,7 +278,7 @@ class Game(object):
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(45.0, size.ratio(), 0.001, 100)
+        gluPerspective(45.0, size.ratio(), 0.001, 200)
 
     @event(pygame.QUIT)
     def on_quit(self, event):
