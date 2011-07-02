@@ -2,6 +2,7 @@
 
 import pygame
 import traceback
+import math
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -16,9 +17,9 @@ def event(type):
     return wrapper
 
 class Game(object):
-    camera_height = 3
+    camera_height = 2
     camera_distance = 10
-    framerate = 3
+    framerate = 30
 
     def __init__(self, size, fullscreen=False):
         pygame.display.set_mode(size.xy(), OPENGL|DOUBLEBUF)
@@ -31,7 +32,7 @@ class Game(object):
         self.on_resize(size=size)
 
     def stop(self):
-        self._running = false
+        self._running = False
 
     def do_stuff(self):
         clock = pygame.time.Clock()
@@ -54,7 +55,19 @@ class Game(object):
             func(self, event)
 
     def logic(self):
-        pass
+        keys = pygame.key.get_pressed()
+        if keys[K_a]:
+            player.x += 0.1
+        if keys[K_d]:
+            player.x -= 0.1
+        if keys[K_w]:
+            player.inc()
+        if keys[K_s]:
+            player.dec()
+        if keys[K_SPACE]:
+            player.jump()
+
+        player.update()
 
     def render(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -65,21 +78,13 @@ class Game(object):
                   0, 0, player.z + 15,
                   0, 1, 0)
 
-        glPushMatrix()
-        glColor4f(1,1,1,1)
-        glBegin(GL_QUADS)
-        glVertex3f(-0.5, 1.5, 0)
-        glVertex3f( 0.5, 1.5, 0)
-        glVertex3f( 0.5,   0, 0)
-        glVertex3f(-0.5,   0, 0)
-        glEnd()
-        glPopMatrix()
+        player.render()
 
         glColor4f(1,1,0,1)
         glBegin(GL_QUADS)
         glVertex3f(-1.5, 0, -1 )
-        glVertex3f(-1.5, 0,  25)
-        glVertex3f( 1.5, 0,  25)
+        glVertex3f(-1.5, 0,  75)
+        glVertex3f( 1.5, 0,  75)
         glVertex3f( 1.5, 0, -1 )
         glEnd()
 
@@ -87,8 +92,8 @@ class Game(object):
 
     @event(pygame.KEYDOWN)
     def on_keydown(self, event):
-        print event.key
-        
+        if event.key == K_ESCAPE:
+            self.quit()
 
     @event(pygame.VIDEORESIZE)
     def on_resize(self, event=None, size=None):
