@@ -174,11 +174,11 @@ class Game(object):
         keys = pygame.key.get_pressed()
         if keys[K_a]:
             player.left()
-        if keys[K_d]:
+        if keys[K_d] or keys[K_e]:
             player.right()
-        if keys[K_w]:
+        if keys[K_w] or keys[K_COMMA]:
             player.inc()
-        if keys[K_s]:
+        if keys[K_s] or keys[K_o]:
             player.dec()
         if keys[K_SPACE]:
             player.jump()
