@@ -11,6 +11,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from vector import Vector2i
 from sprite import Sprite
+from hiscore import Hiscore
 
 event_table = {}
 
@@ -117,55 +118,16 @@ class Game(object):
         self.hiscore(self.name, t,d)
 
     def hiscore(self, name, t, d):
-        try:
-            fp = open('.score', 'r')
-            score = json.load(fp)
-            fp.close()
-        except IOError:
-            score = []
-
-        score.append((name, d, t))
-
-        def frobnicate(a,b):
-            if a[1] < b[1]:
-                return 1
-            if a[1] > b[1]:
-                return -1
-
-            if a[2] > b[2]:
-                return 1
-            return -1
-
-        score.sort(cmp=frobnicate)
-
-        i = 0
-        for i, (_name,_distance,_time) in enumerate(score):
-            if _name == name and _distance == d and _time == t:
-                break
-        
-        else:
-            i += 1
-
-        fp = open('.score', 'w')
-        json.dump(score[:10], fp)
-        fp.close()
+        score = Hiscore('.score', '')
+        score.add(name, distance=d, time=t)
+        score.store()
 
         print 'Total time: %ds' % t
         print 'Total distance: %dm' % d
-        if i < 10:
-            print 'Placement: %d' % (i+1)
+        if score.placement > 0 and score.placement < 10:
+            print 'Placement: %d' % (score.placement+1)
         print
-        self.print_hiscore(mark=i)
-
-    def print_hiscore(self, mark=-1):
-        fp = open('.score', 'r')
-        score = json.load(fp)
-
-        print '-*' * 20
-        print 'Pos           Name   Dist   Time'
-        for i, (_name,_distance,_time) in enumerate(score[:10]):
-            print ' %2d %14.14s  %4dm   %3ds %s' % (i+1, _name, _distance, _time, i == mark and '*' or '')
-        print '-*' * 20
+        score.print_local()
 
     def poll(self):
         global event_table
