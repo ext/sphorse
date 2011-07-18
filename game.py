@@ -76,10 +76,10 @@ class Game(object):
         glFogf(GL_FOG_END, 45.0)
         glEnable(GL_FOG)
 
-        
-
-        self.music = pygame.mixer.Sound('nyan.wav')
-        self.music.play(loops=-1)
+        # Play background "music" if audio was initialized properly.
+        if pygame.mixer.get_init() is not None:
+            self.music = pygame.mixer.Sound('nyan.wav')
+            self.music.play(loops=-1)
 
         self.goal = Sprite('goal.png', 1)
 

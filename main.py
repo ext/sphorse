@@ -1,5 +1,5 @@
 # -*- coding: utf-8; -*-
-import pygame
+import pygame, sys
 from game import Game
 from player import Player
 from vector import Vector2i
@@ -1011,7 +1011,11 @@ map = numpy.array([
 
 if __name__ == '__main__':
     pygame.display.init()
-    pygame.mixer.init()
+	
+    try:
+        pygame.mixer.init()
+    except Exception, e:
+        print >> sys.stderr, e
     
     game = Game(size=Vector2i(800,600), fullscreen=False)
 
