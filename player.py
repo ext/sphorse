@@ -2,7 +2,7 @@
 
 from OpenGL.GL import *
 import game
-import math
+import math, sys
 from sprite import Sprite
 
 class Player(object):
@@ -22,7 +22,12 @@ class Player(object):
         self.jump_pow = 0.0
         self.jumping = False
 
-        self.sprite = Sprite('player.png', 10)
+        try:
+            self.sprite = Sprite('player.png', 10)
+        except:
+            print >> sys.stderr, "Failed to load hires player texture, trying lowres."
+            self.sprite = Sprite('player_lo.png', 10)
+		
         self.shadow = Sprite('shadow.png', 1)
         self.frame = 0
 
