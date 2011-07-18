@@ -50,7 +50,9 @@ class Game(object):
 
         for x in sys.argv:
             if x == '--score':
-                self.print_hiscore()
+                score = Hiscore('.score', 'static.sidvind.com:80', '/2011/sphorse/', 2)
+                score.fetch()
+                score.print_global()
                 sys.exit(0)
 
         # Get name as unicode string
@@ -119,8 +121,15 @@ class Game(object):
         self.hiscore(self.name, t,d)
 
     def hiscore(self, name, t, d):
-        score = Hiscore('.score', '')
+        # Load hiscore and add current to it.
+        score = Hiscore('.score', 'static.sidvind.com:80', '/2011/sphorse/', 2)
         score.add(name, distance=d, time=t)
+        
+        # Global hiscore.
+        score.push()
+        score.fetch(result=(name, d, t))
+        
+        # Store hiscore.
         score.store()
 
         print 'Total time: %ds' % t
@@ -128,7 +137,7 @@ class Game(object):
         if score.placement > 0 and score.placement < 10:
             print 'Placement: %d' % (score.placement+1)
         print
-        score.print_local()
+        score.print_global()
 
     def poll(self):
         global event_table
