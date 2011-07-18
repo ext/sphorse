@@ -64,9 +64,14 @@ class Game(object):
 
         glClearColor(0,0,0,1)
         glEnable(GL_DEPTH_TEST)
+        glDepthFunc(GL_LEQUAL)
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
 
         glFogi(GL_FOG_MODE, GL_LINEAR)
         glFogfv(GL_FOG_COLOR, (0,0,0,1))
@@ -235,7 +240,17 @@ class Game(object):
         glEnd()
         glPopAttrib()
 
-        for z, row in enumerate(map[my:my+50]):
+        # load map region
+        region = map[my:my+50]
+        
+        # Take region, enumerate it (so it knows which part it is currently
+        # rendering) and reverse it so it can be rendered back-to-front for
+        #  - Performance
+        #  - Reduces artifacts on poor GPUs which might render black artifacts
+        #    on the edges.
+        tmp = reversed(list(enumerate(region)))
+        
+        for z, row in tmp:
             z += my
             for i, x in enumerate([-2, -1, 0, 1, 2]):
                 if row[i] < 0.0:
@@ -263,28 +278,34 @@ class Game(object):
                     
                     glBegin(GL_QUADS)
                     glColor4f(*lcolor)
+                    
+                    # Top face
                     glVertex3f(*p0)
                     glVertex3f(*p1)
                     glVertex3f(*p2)
                     glVertex3f(*p3)
 
+                    # Bottom face
                     glVertex3f(*p6)
-                    glVertex3f(*p7)
-                    glVertex3f(*p4)
                     glVertex3f(*p5)
-
+                    glVertex3f(*p4)
+                    glVertex3f(*p7)
                     
                     glColor4f(*dcolor)
+                    
+                    # Front face
                     glVertex3f(*p0)
                     glVertex3f(*p3)
                     glVertex3f(*p4)
                     glVertex3f(*p5)
                     
+                    # Right face
                     glVertex3f(*p0)
                     glVertex3f(*p5)
                     glVertex3f(*p6)
                     glVertex3f(*p1)
-                    
+
+                    # Left face
                     glVertex3f(*p3)
                     glVertex3f(*p2)
                     glVertex3f(*p7)
@@ -314,7 +335,7 @@ class Game(object):
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(45.0, size.ratio(), 0.001, 200)
+        gluPerspective(45.0, size.ratio(), 0.1, 200)
 
     @event(pygame.QUIT)
     def on_quit(self, event):
