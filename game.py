@@ -53,7 +53,8 @@ class Game(object):
                 self.print_hiscore()
                 sys.exit(0)
 
-        self.name = sys.argv[1]
+        # Get name as unicode string
+        self.name = sys.argv[1].decode(sys.getfilesystemencoding())
 
         flags = OPENGL|DOUBLEBUF
         if '--fullscreen' in sys.argv:
