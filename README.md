@@ -5,3 +5,5 @@ My entry to NöX 24h gamedev. (code is quite messy). Requires pygame, pyopengl a
 
 Run `make` to prepare textures.
 WASD to control, space to jump.
+
+See <http://static.sidvind.com/2011/sphorse/> for hiscores.
