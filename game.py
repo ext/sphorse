@@ -6,6 +6,7 @@ import math
 import sys
 import json
 import random
+import argparse
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -44,22 +45,24 @@ class Game(object):
     ]
 
     def __init__(self, size, fullscreen=False):
-        if len(sys.argv) < 2:
-            print 'specify name as argument',
-            sys.exit(1)
-
-        for x in sys.argv:
-            if x == '--score':
-                score = Hiscore('.score', 'static.sidvind.com:80', '/2011/sphorse/', 2)
-                score.fetch()
-                score.print_global()
-                sys.exit(0)
-
-        # Get name as unicode string
-        self.name = sys.argv[1].decode(sys.getfilesystemencoding())
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--score', action='store_true', help="Only show scores")
+        parser.add_argument('-f', '--fullscreen', dest='fullscreen', action='store_true', help="Run in fullscreen")
+        parser.add_argument(      '--windowed',   dest='fullscreen', action='store_false', help="Run in window")
+        parser.add_argument('name', metavar='NAME', help="Player name")
+        args = parser.parse_args()
+        
+        # fix windows codepage encoding.
+        self.name = args.name.decode(sys.getfilesystemencoding())
+        
+        if args.score:
+            score = Hiscore('.score', 'static.sidvind.com:80', '/2011/sphorse/', 2)
+            score.fetch()
+            score.print_global()
+            sys.exit(0)
 
         flags = OPENGL|DOUBLEBUF
-        if '--fullscreen' in sys.argv:
+        if args.fullscreen:
             flags |= FULLSCREEN
 
         pygame.display.set_mode(size.xy(), flags)
