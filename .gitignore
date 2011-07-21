@@ -2,3 +2,5 @@
 \#*\#
 *.py[co]
 .score
+
+/score
