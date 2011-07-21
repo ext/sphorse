@@ -2,7 +2,7 @@
 
 import json
 import httplib
-import re, sys, csv
+import re, sys, csv, os
 
 def hiscore_sort(a,b):
     if a[1] < b[1]:
@@ -24,6 +24,9 @@ class Hiscore(object):
         self.url = url
         self.version = version
         
+        if sys.platform == 'win32':
+            self.filename = self.filename[1:] # remove . (setting hidden attr instead)
+        
         try:
             fp = open(self.filename, 'r')
             self.local = json.load(fp)
@@ -44,9 +47,17 @@ class Hiscore(object):
     
     # Save local db.
     def store(self):
+        # unhide so it can write to it (wtf windows?)
+        if sys.platform == 'win32':
+            os.system('attrib -h "%s"' % self.filename)
+
         fp = open(self.filename, 'w')
         json.dump(self.local[:10], fp)
         fp.close()
+        
+        # hide file on windows
+        if sys.platform == 'win32':
+            os.system('attrib +h "%s"' % self.filename)
     
     # Fetch score from master db.
     def fetch(self, result=None):
