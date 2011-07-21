@@ -49,17 +49,20 @@ class Game(object):
         parser.add_argument('--score', action='store_true', help="Only show scores")
         parser.add_argument('-f', '--fullscreen', dest='fullscreen', action='store_true', help="Run in fullscreen")
         parser.add_argument(      '--windowed',   dest='fullscreen', action='store_false', help="Run in window")
-        parser.add_argument('name', metavar='NAME', help="Player name")
+        parser.add_argument('name', metavar='NAME', nargs='?', help="Player name")
         args = parser.parse_args()
-        
-        # fix windows codepage encoding.
-        self.name = args.name.decode(sys.getfilesystemencoding())
         
         if args.score:
             score = Hiscore('.score', 'static.sidvind.com:80', '/2011/sphorse/', 2)
             score.fetch()
             score.print_global()
             sys.exit(0)
+        
+        if args.name is not None:
+            # fix windows codepage encoding.
+            self.name = args.name.decode(sys.getfilesystemencoding())
+        else:
+            self.name = raw_input(u'Player name: ').decode(sys.stdin.encoding)
 
         flags = OPENGL|DOUBLEBUF
         if args.fullscreen:
