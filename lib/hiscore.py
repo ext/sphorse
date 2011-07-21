@@ -49,7 +49,7 @@ class Hiscore(object):
     def store(self):
         # unhide so it can write to it (wtf windows?)
         if sys.platform == 'win32':
-            os.system('attrib -h "%s"' % self.filename)
+            os.system('attrib -h -r "%s"' % self.filename)
 
         fp = open(self.filename, 'w')
         json.dump(self.local[:10], fp)
@@ -57,7 +57,7 @@ class Hiscore(object):
         
         # hide file on windows
         if sys.platform == 'win32':
-            os.system('attrib +h "%s"' % self.filename)
+            os.system('attrib +h +r "%s"' % self.filename)
     
     # Fetch score from master db.
     def fetch(self, result=None):
